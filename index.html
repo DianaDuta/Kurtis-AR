@@ -1,231 +1,231 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kurt WebAR — Nirvanas Experience</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kurt WebAR — Nirvanas Experience</title>
 
-  <!-- Bibliotecas externas: A-Frame para renderizado 3D y MindAR para seguimiento de imágenes -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <!-- Bibliotecas externas: A-Frame para renderizado 3D y MindAR para seguimiento de imágenes -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Hoja de estilos externa para la arquitectura visual del proyecto -->
-  <link rel="stylesheet" href="./styles/main.css?v=5" />
-</head>
+    <!-- Hoja de estilos externa para la arquitectura visual del proyecto -->
+    <link rel="stylesheet" href="./styles/main.css?v=7" />
+  </head>
 
-<body>
+  <body>
 
-  <!-- ==============================================================================
-       1. PANTALLA DE CARGA INICIAL (OVERLAY SOBRE FONDO NEGRO)
-       ============================================================================== -->
-  <div id="loading-screen" aria-live="polite">
-    <div class="loading-content">
-      <img src="./logo_nirvanas.png?v=5" alt="Nirvanas AR Logo" class="loading-logo" />
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Iniciando experiencia AR...</div>
+    <!-- ==============================================================================
+         1. PANTALLA DE CARGA INICIAL (OVERLAY SOBRE FONDO NEGRO)
+         ============================================================================== -->
+    <div id="loading-screen" aria-live="polite">
+      <div class="loading-content">
+        <img src="./images/logo_nirvanas.png?v=7" alt="Nirvanas AR Logo" class="loading-logo" />
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Iniciando experiencia AR...</div>
+      </div>
     </div>
-  </div>
 
-  <!-- ==============================================================================
-       2. ESCENA PRINCIPAL DE REALIDAD AUMENTADA (A-FRAME & MINDAR)
-       ============================================================================== -->
-  <a-scene 
-    mindar-image="imageTargetSrc: ./target.mind; uiScanning: yes;" 
-    renderer="antialias: true; preserveDrawingBuffer: true; alpha: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+    <!-- ==============================================================================
+         2. ESCENA PRINCIPAL DE REALIDAD AUMENTADA (A-FRAME & MINDAR)
+         ============================================================================== -->
+    <a-scene 
+      mindar-image="imageTargetSrc: ./target.mind; uiScanning: yes;" 
+      renderer="antialias: true; preserveDrawingBuffer: true; alpha: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
 
-    <!-- Carga diferida de recursos gráficos con tiempo límite de 60 segundos -->
-    <a-assets timeout="60000">
-      <img id="kurt1" src="./kurt1_improved_transparent.png?v=5" crossorigin="anonymous">
-      <img id="kurt2" src="./kurt2_improved_transparent.png?v=5" crossorigin="anonymous">
-      <img id="kurt3" src="./kurt3_improved_transparent.png?v=5" crossorigin="anonymous">
-    </a-assets>
+      <!-- Carga diferida de recursos gráficos con tiempo límite de 60 segundos desde la carpeta images/ -->
+      <a-assets timeout="60000">
+        <img id="kurt1" src="./images/kurt1_improved_transparent.png?v=7" crossorigin="anonymous">
+        <img id="kurt2" src="./images/kurt2_improved_transparent.png?v=7" crossorigin="anonymous">
+        <img id="kurt3" src="./images/kurt3_improved_transparent.png?v=7" crossorigin="anonymous">
+      </a-assets>
 
-    <!-- Cámara virtual estática fija a la perspectiva del usuario -->
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <!-- Cámara virtual estática fija a la perspectiva del usuario -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Entidad conectada al descriptor de la imagen objetivo (targetIndex 0) -->
-    <a-entity id="kurtTarget" mindar-image-target="targetIndex: 0">
-      
-      <!-- Plano geométrico con material transparente donde se proyecta la ilustración -->
-      <a-plane 
-        id="kurtPlane" 
-        position="0 0 0" 
-        material="shader: flat; transparent: true; alphaTest: 0.5; src: #kurt1">
-      </a-plane>
-
-    </a-entity>
-  </a-scene>
-
-  <!-- ==============================================================================
-       3. BOTÓN FLOTANTE INTERACTIVO (ENLACE A INSTAGRAM)
-       ============================================================================== -->
-  <a href="https://www.instagram.com/nirvanasgranada/" 
-     target="_blank" 
-     rel="noopener noreferrer" 
-     class="nirvanas-badge" 
-     aria-label="Visitar el perfil oficial de Instagram de Nirvanas Granada"
-     title="Visitar Instagram de Nirvanas (@nirvanasgranada)">
-    <img src="./logo_nirvanas.png?v=5" alt="Acceso directo a Instagram Nirvanas" />
-  </a>
-
-  <!-- ==============================================================================
-       4. CONTROLADOR LÓGICO DE ANIMACIÓN Y GESTIÓN DE EVENTOS
-       ============================================================================== -->
-  <script>
-    (function () {
-      'use strict';
-
-      /**
-       * Inhabilitación estricta de elementos de interfaz VR inyectados dinámicamente por A-Frame.
-       */
-      function suprimirElementosVR() {
-        const elementosVR = document.querySelectorAll('.a-enter-vr, .a-enter-vr-button, .a-enter-ar, .a-enter-ar-button');
-        elementosVR.forEach(function (elemento) {
-          elemento.remove();
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', suprimirElementosVR);
-      setInterval(suprimirElementosVR, 500);
-
-      /**
-       * Ocultación progresiva de la pantalla de carga al completar la inicialización de MindAR.
-       */
-      const escenaElemento = document.querySelector('a-scene');
-      const pantallaCarga = document.getElementById('loading-screen');
-
-      function ocultarPantallaCarga() {
-        if (pantallaCarga && !pantallaCarga.classList.contains('hidden')) {
-          pantallaCarga.classList.add('hidden');
-          setTimeout(function () {
-            if (pantallaCarga.parentNode) {
-              pantallaCarga.parentNode.removeChild(pantallaCarga);
-            }
-          }, 700);
-        }
-      }
-
-      if (escenaElemento) {
-        escenaElemento.addEventListener('arReady', ocultarPantallaCarga);
-        escenaElemento.addEventListener('loaded', ocultarPantallaCarga);
-        // Mecanismo de seguridad para ocultar la pantalla tras 6 segundos en caso de latencia de red
-        setTimeout(ocultarPantallaCarga, 6000);
-      }
-
-      /**
-       * Parámetros de configuración física y secuencia de animación por fotogramas.
-       */
-      const CONFIGURACION = {
-        anchoTargetCm: 12.0, // Ancho físico de la imagen objetivo impresa (en centímetros)
-        altoPersonajeCm: 20.0, // Altura proporcional deseada para el personaje AR (en centímetros)
+      <!-- Entidad conectada al descriptor de la imagen objetivo (targetIndex 0) -->
+      <a-entity id="kurtTarget" mindar-image-target="targetIndex: 0">
         
-        // Secuencia temporal de fotogramas (Pose estática -> Transición -> Pausa -> Retorno)
-        fotogramas: [
-          { selector: "#kurt1", duracionMs: 1500 }, // Fotograma 1: Reposo / Mirada fija (1.5s)
-          { selector: "#kurt2", duracionMs: 350  }, // Fotograma 2: Transición ascendente de brazo (350ms)
-          { selector: "#kurt3", duracionMs: 1800 }, // Fotograma 3: Pausa sostenida en pose de fumar (1.8s)
-          { selector: "#kurt2", duracionMs: 350  }  // Fotograma 4: Transición descendente de brazo (350ms)
-        ]
-      };
+        <!-- Plano geométrico con material transparente donde se proyecta la ilustración -->
+        <a-plane 
+          id="kurtPlane" 
+          position="0 0 0" 
+          material="shader: flat; transparent: true; alphaTest: 0.5; src: #kurt1">
+        </a-plane>
 
-      // Referencias a elementos del DOM
-      const planoPersonaje = document.getElementById('kurtPlane');
-      const imagenBase = document.getElementById('kurt1');
-      const entidadTarget = document.getElementById('kurtTarget');
+      </a-entity>
+    </a-scene>
 
-      // Variables de control de estado
-      let indiceFotogramaActual = 0;
-      let animacionActiva = false;
-      let temporizadorAnimacion = null;
+    <!-- ==============================================================================
+         3. BOTÓN FLOTANTE INTERACTIVO (ENLACE A INSTAGRAM)
+         ============================================================================== -->
+    <a href="https://www.instagram.com/nirvanasgranada/" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="nirvanas-badge" 
+       aria-label="Visitar el perfil oficial de Instagram de Nirvanas Granada"
+       title="Visitar Instagram de Nirvanas (@nirvanasgranada)">
+      <img src="./images/logo_nirvanas.png?v=7" alt="Acceso directo a Instagram Nirvanas" />
+    </a>
 
-      /**
-       * Calcula y aplica las dimensiones físicas del plano 3D en la escena AR.
-       */
-      function ajustarEscalaEscena() {
-        const anchoTargetMetros = CONFIGURACION.anchoTargetCm / 100;
-        const unidadesPorMetro = 1 / anchoTargetMetros;
+    <!-- ==============================================================================
+         4. CONTROLADOR LÓGICO DE ANIMACIÓN Y GESTIÓN DE EVENTOS
+         ============================================================================== -->
+    <script>
+      (function () {
+        'use strict';
 
-        const altoPersonajeMetros = CONFIGURACION.altoPersonajeCm / 100;
-        const unidadesAltoPlano = altoPersonajeMetros * unidadesPorMetro;
-
-        const relacionAspectoImagen = (imagenBase.naturalWidth && imagenBase.naturalHeight)
-          ? (imagenBase.naturalWidth / imagenBase.naturalHeight)
-          : 1.0;
-        const unidadesAnchoPlano = unidadesAltoPlano * relacionAspectoImagen;
-
-        planoPersonaje.setAttribute("height", unidadesAltoPlano);
-        planoPersonaje.setAttribute("width", unidadesAnchoPlano);
-      }
-
-      /**
-       * Actualiza la textura activa del material asignado al plano 3D.
-       * @param {number} indice - Índice del fotograma a renderizar.
-       */
-      function actualizarFotograma(indice) {
-        const datosFotograma = CONFIGURACION.fotogramas[indice];
-        planoPersonaje.setAttribute("material", "src", datosFotograma.selector);
-      }
-
-      /**
-       * Ciclo iterativo para el control secuencial de fotogramas con tiempos predefinidos.
-       */
-      function ejecutarBucleAnimacion() {
-        if (!animacionActiva) return;
-
-        const datosFotograma = CONFIGURACION.fotogramas[indiceFotogramaActual];
-
-        temporizadorAnimacion = setTimeout(function () {
-          indiceFotogramaActual = (indiceFotogramaActual + 1) % CONFIGURACION.fotogramas.length;
-          actualizarFotograma(indiceFotogramaActual);
-          ejecutarBucleAnimacion();
-        }, datosFotograma.duracionMs);
-      }
-
-      /**
-       * Inicia la reproducción secuencial al confirmar la detección de la imagen objetivo.
-       */
-      function iniciarAnimacion() {
-        if (animacionActiva) return;
-        animacionActiva = true;
-        indiceFotogramaActual = 0;
-        actualizarFotograma(0);
-        ejecutarBucleAnimacion();
-      }
-
-      /**
-       * Cancela la reproducción y resetea el temporizador al perder el rastreo del objetivo.
-       */
-      function detenerAnimacion() {
-        animacionActiva = false;
-        if (temporizadorAnimacion) {
-          clearTimeout(temporizadorAnimacion);
-          temporizadorAnimacion = null;
+        /**
+         * Inhabilitación estricta de elementos de interfaz VR inyectados dinámicamente por A-Frame.
+         */
+        function suprimirElementosVR() {
+          const elementosVR = document.querySelectorAll('.a-enter-vr, .a-enter-vr-button, .a-enter-ar, .a-enter-ar-button');
+          elementosVR.forEach(function (elemento) {
+            elemento.remove();
+          });
         }
-      }
 
-      // Configuración de la animación procedural de oscilación (efecto de flotación)
-      planoPersonaje.setAttribute("animation", {
-        property: "position",
-        to: "0 0.03 0.0",
-        dir: "alternate",
-        loop: true,
-        dur: 2800,
-        easing: "easeInOutSine"
-      });
+        window.addEventListener('DOMContentLoaded', suprimirElementosVR);
+        setInterval(suprimirElementosVR, 500);
 
-      // Vinculación de eventos de carga y detección
-      if (imagenBase.complete) {
-        ajustarEscalaEscena();
-      } else {
-        imagenBase.onload = ajustarEscalaEscena;
-      }
+        /**
+         * Ocultación progresiva de la pantalla de carga al completar la inicialización de MindAR.
+         */
+        const escenaElemento = document.querySelector('a-scene');
+        const pantallaCarga = document.getElementById('loading-screen');
 
-      entidadTarget.addEventListener("targetFound", iniciarAnimacion);
-      entidadTarget.addEventListener("targetLost", detenerAnimacion);
+        function ocultarPantallaCarga() {
+          if (pantallaCarga && !pantallaCarga.classList.contains('hidden')) {
+            pantallaCarga.classList.add('hidden');
+            setTimeout(function () {
+              if (pantallaCarga.parentNode) {
+                pantallaCarga.parentNode.removeChild(pantallaCarga);
+              }
+            }, 700);
+          }
+        }
 
-    })();
-  </script>
-</body>
+        if (escenaElemento) {
+          escenaElemento.addEventListener('arReady', ocultarPantallaCarga);
+          escenaElemento.addEventListener('loaded', ocultarPantallaCarga);
+          // Mecanismo de seguridad para ocultar la pantalla tras 6 segundos en caso de latencia de red
+          setTimeout(ocultarPantallaCarga, 6000);
+        }
+
+        /**
+         * Parámetros de configuración física y secuencia de animación por fotogramas.
+         */
+        const CONFIGURACION = {
+          anchoTargetCm: 12.0, // Ancho físico de la imagen objetivo impresa (en centímetros)
+          altoPersonajeCm: 20.0, // Altura proporcional deseada para el personaje AR (en centímetros)
+          
+          // Secuencia temporal de fotogramas (Pose estática -> Transición -> Pausa -> Retorno)
+          fotogramas: [
+            { selector: "#kurt1", duracionMs: 1500 }, // Fotograma 1: Reposo / Mirada fija (1.5s)
+            { selector: "#kurt2", duracionMs: 350  }, // Fotograma 2: Transición ascendente de brazo (350ms)
+            { selector: "#kurt3", duracionMs: 1800 }, // Fotograma 3: Pausa sostenida en pose de fumar (1.8s)
+            { selector: "#kurt2", duracionMs: 350  }  // Fotograma 4: Transición descendente de brazo (350ms)
+          ]
+        };
+
+        // Referencias a elementos del DOM
+        const planoPersonaje = document.getElementById('kurtPlane');
+        const imagenBase = document.getElementById('kurt1');
+        const entidadTarget = document.getElementById('kurtTarget');
+
+        // Variables de control de estado
+        let indiceFotogramaActual = 0;
+        let animacionActiva = false;
+        let temporizadorAnimacion = null;
+
+        /**
+         * Calcula y aplica las dimensiones físicas del plano 3D en la escena AR.
+         */
+        function ajustarEscalaEscena() {
+          const anchoTargetMetros = CONFIGURACION.anchoTargetCm / 100;
+          const unidadesPorMetro = 1 / anchoTargetMetros;
+
+          const altoPersonajeMetros = CONFIGURACION.altoPersonajeCm / 100;
+          const unidadesAltoPlano = altoPersonajeMetros * unidadesPorMetro;
+
+          const relacionAspectoImagen = (imagenBase.naturalWidth && imagenBase.naturalHeight)
+            ? (imagenBase.naturalWidth / imagenBase.naturalHeight)
+            : 1.0;
+          const unidadesAnchoPlano = unidadesAltoPlano * relacionAspectoImagen;
+
+          planoPersonaje.setAttribute("height", unidadesAltoPlano);
+          planoPersonaje.setAttribute("width", unidadesAnchoPlano);
+        }
+
+        /**
+         * Actualiza la textura activa del material asignado al plano 3D.
+         * @param {number} indice - Índice del fotograma a renderizar.
+         */
+        function actualizarFotograma(indice) {
+          const datosFotograma = CONFIGURACION.fotogramas[indice];
+          planoPersonaje.setAttribute("material", "src", datosFotograma.selector);
+        }
+
+        /**
+         * Ciclo iterativo para el control secuencial de fotogramas con tiempos predefinidos.
+         */
+        function ejecutarBucleAnimacion() {
+          if (!animacionActiva) return;
+
+          const datosFotograma = CONFIGURACION.fotogramas[indiceFotogramaActual];
+
+          temporizadorAnimacion = setTimeout(function () {
+            indiceFotogramaActual = (indiceFotogramaActual + 1) % CONFIGURACION.fotogramas.length;
+            actualizarFotograma(indiceFotogramaActual);
+            ejecutarBucleAnimacion();
+          }, datosFotograma.duracionMs);
+        }
+
+        /**
+         * Inicia la reproducción secuencial al confirmar la detección de la imagen objetivo.
+         */
+        function iniciarAnimacion() {
+          if (animacionActiva) return;
+          animacionActiva = true;
+          indiceFotogramaActual = 0;
+          actualizarFotograma(0);
+          ejecutarBucleAnimacion();
+        }
+
+        /**
+         * Cancela la reproducción y resetea el temporizador al perder el rastreo del objetivo.
+         */
+        function detenerAnimacion() {
+          animacionActiva = false;
+          if (temporizadorAnimacion) {
+            clearTimeout(temporizadorAnimacion);
+            temporizadorAnimacion = null;
+          }
+        }
+
+        // Configuración de la animación procedural de oscilación (efecto de flotación)
+        planoPersonaje.setAttribute("animation", {
+          property: "position",
+          to: "0 0.03 0.0",
+          dir: "alternate",
+          loop: true,
+          dur: 2800,
+          easing: "easeInOutSine"
+        });
+
+        // Vinculación de eventos de carga y detección
+        if (imagenBase.complete) {
+          ajustarEscalaEscena();
+        } else {
+          imagenBase.onload = ajustarEscalaEscena;
+        }
+
+        entidadTarget.addEventListener("targetFound", iniciarAnimacion);
+        entidadTarget.addEventListener("targetLost", detenerAnimacion);
+
+      })();
+    </script>
+  </body>
 </html>

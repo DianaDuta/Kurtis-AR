@@ -12,7 +12,7 @@
 
 <div align="center">
   <br>
-  <img src="./QR_Kurtis_Nirvanas.png" alt="Código QR Target Nirvanas AR" width="280">
+  <img src="./images/QR_Kurtis_Nirvanas.png" alt="Código QR Target Nirvanas AR" width="280">
   <p><b>📱 Escanea este código QR con tu teléfono móvil para abrir la aplicación WebAR y utilizarlo como objetivo de rastreo.</b></p>
   <br>
 </div>
@@ -57,15 +57,16 @@ Kurtis-AR/
 │
 ├── index.html                        # Punto de entrada principal y escena A-Frame / MindAR
 ├── target.mind                       # Descriptores binarios compilados de la imagen objetivo
-├── QR_Kurtis_Nirvanas.png            # Imagen objetivo QR (Target físico impreso o en pantalla)
-├── logo_nirvanas.png                 # Logotipo oficial procesado en alta resolución PNG
 │
-├── styles/
-│   └── main.css                      # Hoja de estilos principal (pantalla de carga, badge y reseteos)
+├── images/                           # Directorio central de recursos gráficos (PNGs)
+│   ├── QR_Kurtis_Nirvanas.png        # Imagen objetivo QR (Target físico impreso o en pantalla)
+│   ├── logo_nirvanas.png             # Logotipo oficial procesado en alta resolución PNG
+│   ├── kurt1_improved_transparent.png# Fotograma 1: Reposo / Mirada fija (PNG Transparente)
+│   ├── kurt2_improved_transparent.png# Fotograma 2: Transición de brazo (PNG Transparente)
+│   └── kurt3_improved_transparent.png# Fotograma 3: Postura de fumar (PNG Transparente)
 │
-├── kurt1_improved_transparent.png    # Fotograma 1: Reposo / Mirada fija (PNG Transparente)
-├── kurt2_improved_transparent.png    # Fotograma 2: Transición de brazo (PNG Transparente)
-└── kurt3_improved_transparent.png    # Fotograma 3: Postura de fumar (PNG Transparente)
+└── styles/
+    └── main.css                      # Hoja de estilos principal (pantalla de carga, badge y reseteos)
 ```
 
 ---

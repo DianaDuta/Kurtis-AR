@@ -3,28 +3,29 @@
  * PROYECTO: Kurt WebAR — Nirvanas Experience
  * ARCHIVO: styles/main.css
  * DESCRIPCIÓN: Hoja de estilos principal para la interfaz WebAR.
- *              Incluye reseteo global, pantalla de carga personalizada,
- *              inhabilitación de componentes VR nativos y botón flotante interactivo.
+ *              Incluye reseteo global, transparencia para la cámara en vivo,
+ *              pantalla de carga personalizada sobre negro y botón flotante.
  * ==============================================================================
  */
 
 /* ------------------------------------------------------------------------------
-   1. RESETEO Y CONFIGURACIÓN DEL LIENZO PRINCIPAL
+   1. RESETEO Y TRANSPARENCIA DEL LIENZO PRINCIPAL (CÁMARA EN VIVO)
    ------------------------------------------------------------------------------ */
-html, body {
+html, body, a-scene, canvas {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: #000000;
+  background: transparent !important;
+  background-color: transparent !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* ------------------------------------------------------------------------------
-   2. PANTALLA DE CARGA PERSONALIZADA (LOADING OVERLAY)
+   2. PANTALLA DE CARGA PERSONALIZADA (LOADING OVERLAY SOBRE FONDO NEGRO)
    ------------------------------------------------------------------------------ */
 #loading-screen {
   position: fixed;
@@ -41,7 +42,7 @@ html, body {
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estado oculto de la pantalla de carga tras inicializar la escena */
+/* Estado oculto de la pantalla de carga tras inicializar la cámara y la escena */
 #loading-screen.hidden {
   opacity: 0;
   visibility: hidden;
@@ -118,7 +119,7 @@ button.a-enter-vr-button {
 }
 
 /* ------------------------------------------------------------------------------
-   4. BOTÓN INTERACTIVO FLOTANTE (ENLACE A INSTAGRAM)
+   4. BOTÓN INTERACTIVO FLOTANTE RECTANGULAR (ENLACE A INSTAGRAM)
    ------------------------------------------------------------------------------ */
 .nirvanas-badge {
   position: fixed;
